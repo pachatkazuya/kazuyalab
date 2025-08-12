@@ -1,0 +1,38 @@
+name: app
+on:
+  workflow_dispatch:
+permissions:
+  id-token: write
+  contents: read
+env:
+  RG: rg-kazuyalab
+  AKS: aks-kazuyalab
+  NS: kazapp
+  ACR_NAME: acrkazuyalab
+  IMAGE: acrkazuyalab.azurecr.io/springboot-app:latest
+jobs:
+  build_push_deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: azure/login@v2
+        with:
+          client-id:       ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id:       ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - name: ACR login
+        run: az acr login -n $ACR_NAME
+      - name: Build & Push
+        run: |
+          docker build -t $IMAGE .
+          docker push $IMAGE
+      - name: Get AKS creds
+        run: az aks get-credentials -g $RG -n $AKS --overwrite-existing
+      - name: Helm upgrade kazapp
+        working-directory: app/chart/kazapp
+        run: |
+          helm dependency update
+          helm upgrade --install kazapp . \
+            --namespace $NS --create-namespace \
+            --set image.repository=${IMAGE%:*} \
+            --set image.tag=${IMAGE##*:}
