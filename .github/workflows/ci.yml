@@ -14,13 +14,13 @@ concurrency:
 
 env:
   RESOURCE_GROUP: ${{ vars.RESOURCE_GROUP }}
-  AKS_NAME:       ${{ vars.AKS_NAME }}
-  ACR_NAME:       ${{ vars.ACR_NAME }}
-  K8S_NAMESPACE:  ${{ vars.K8S_NAMESPACE }}
-  HELM_CHART_PATH:${{ vars.HELM_CHART_PATH }}
-  IMAGE_NAME:     ${{ vars.IMAGE_NAME }}
-  DOCKERFILE_PATH:${{ vars.DOCKERFILE_PATH }}
-  BUILD_CONTEXT:  ${{ vars.BUILD_CONTEXT }}
+  AKS_NAME: ${{ vars.AKS_NAME }}
+  ACR_NAME: ${{ vars.ACR_NAME }}
+  K8S_NAMESPACE: ${{ vars.K8S_NAMESPACE }}
+  HELM_CHART_PATH: ${{ vars.HELM_CHART_PATH }}
+  IMAGE_NAME: ${{ vars.IMAGE_NAME }}
+  DOCKERFILE_PATH: ${{ vars.DOCKERFILE_PATH }}
+  BUILD_CONTEXT: ${{ vars.BUILD_CONTEXT }}
 
 jobs:
   build_push_deploy:
@@ -31,8 +31,8 @@ jobs:
       - name: Azure login (OIDC)
         uses: azure/login@v2
         with:
-          client-id:       ${{ vars.AZURE_CLIENT_ID }}
-          tenant-id:       ${{ vars.AZURE_TENANT_ID }}
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
 
       - name: Verify required variables and paths
@@ -58,9 +58,9 @@ jobs:
       - name: Docker login to ACR (token)
         uses: docker/login-action@v3
         with:
-          registry:  ${{ steps.acr.outputs.login_server }}
-          username:  00000000-0000-0000-0000-000000000000
-          password:  ${{ steps.acrtok.outputs.token }}
+          registry: ${{ steps.acr.outputs.login_server }}
+          username: 00000000-0000-0000-0000-000000000000
+          password: ${{ steps.acrtok.outputs.token }}
 
       - name: Build & Push
         run: |
